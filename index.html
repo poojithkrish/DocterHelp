@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hale – Book an online doctor consultation</title>
+<meta name="description" content="Book a video, audio or chat consultation with licensed doctors. Pick a time that suits you and get a written prescription when you need one.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pine: #14403a;
+    --pine-2: #1d5a51;
+    --mint: #cfeee2;
+    --mint-2: #e6f6ef;
+    --paper: #f5faf7;
+    --white: #ffffff;
+    --ink: #10231f;
+    --muted: #4b605a;
+    --line: #d3e3dc;
+    --sun: #f4b942;
+    --sun-soft: #fff3d1;
+    --danger: #b3261e;
+    --focus: #0b57d0;
+    --display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+    --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --r-sm: 12px;
+    --r-md: 20px;
+    --r-lg: 32px;
+    color-scheme: light;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--body); font-size: 17px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  body.locked { overflow: hidden; }
+  h1, h2, h3, h4, p { margin: 0; }
+  h1, h2, h3 { font-family: var(--display); color: var(--pine); letter-spacing: -0.025em; text-wrap: balance; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .wrap { width: min(1160px, 100% - 40px); margin-inline: auto; }
+  .section { padding: clamp(56px, 8vw, 104px) 0; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 48px; padding: 0 24px; border-radius: 999px; border: 1px solid transparent;
+    font-weight: 600; text-decoration: none; background: none; transition: background .2s, transform .15s;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn-sun { background: var(--sun); color: #2b2005; }
+  .btn-sun:hover { background: #f8c862; }
+  .btn-pine { background: var(--pine); color: var(--white); }
+  .btn-pine:hover { background: var(--pine-2); }
+  .btn-ghost { border-color: var(--pine); color: var(--pine); }
+  .btn-ghost:hover { background: var(--mint-2); }
+  .btn[disabled] { opacity: .45; cursor: not-allowed; }
+  .btn-sm { min-height: 42px; padding: 0 18px; }
+
+  /* Header */
+  .site-head { position: sticky; top: 0; z-index: 30; background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  .head-row { display: flex; align-items: center; justify-content: space-between; min-height: 68px; gap: 16px; }
+  .logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--display); font-weight: 800; font-size: 1.5rem; color: var(--pine); letter-spacing: -0.03em; }
+  .logo svg { width: 32px; height: 32px; }
+  .nav { display: flex; align-items: center; gap: 28px; }
+  .nav a:not(.btn) { text-decoration: none; font-weight: 500; color: var(--muted); padding: 8px 2px; }
+  .nav a:not(.btn):hover { color: var(--pine); text-decoration: underline; text-underline-offset: 6px; }
+  .menu-btn { display: none; width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--line); background: var(--white); place-items: center; }
+  .menu-btn svg { width: 22px; height: 22px; }
+
+  /* Hero */
+  .hero { padding: clamp(28px, 5vw, 64px) 0 clamp(48px, 7vw, 96px); background: radial-gradient(70% 80% at 100% 0%, var(--mint-2), transparent 70%); }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(32px, 6vw, 80px); align-items: center; }
+  .live { display: inline-flex; align-items: center; gap: 10px; background: var(--white); border: 1px solid var(--line); border-radius: 999px; padding: 6px 16px 6px 12px; font-size: .95rem; font-weight: 500; margin-bottom: 22px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: #2fb67c; box-shadow: 0 0 0 4px rgba(47,182,124,.2); flex: none; }
+  .hero h1 { font-size: clamp(2.5rem, 6.2vw, 4.6rem); line-height: 1.02; font-weight: 700; }
+  .lede { font-size: 1.2rem; color: var(--muted); max-width: 34em; margin-top: 20px; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+  .quick { margin-top: 36px; }
+  .quick p { font-weight: 600; margin-bottom: 10px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--white);
+    font-size: .95rem; font-weight: 500; transition: background .15s, border-color .15s;
+  }
+  .chip:hover { border-color: var(--pine); }
+  .chip[aria-pressed="true"] { background: var(--pine); border-color: var(--pine); color: var(--white); }
+  .assure { list-style: none; padding: 0; margin: 32px 0 0; display: flex; flex-wrap: wrap; gap: 10px 26px; color: var(--muted); font-size: .98rem; }
+  .assure li { display: inline-flex; align-items: center; gap: 8px; }
+  .assure svg { width: 18px; height: 18px; color: var(--pine-2); flex: none; }
+
+  /* Call mock-up */
+  .call-wrap { position: relative; max-width: 460px; width: 100%; margin-inline: auto; }
+  .call { position: relative; aspect-ratio: 4 / 5; border-radius: var(--r-lg); overflow: hidden; background: linear-gradient(165deg, #d9f3e8, #9bd6c1); box-shadow: 0 40px 70px -36px rgba(20,64,58,.65); }
+  .call > svg.doctor { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .call-top { position: absolute; left: 14px; right: 14px; top: 14px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; background: rgba(20,64,58,.88); color: var(--white); border-radius: 999px; padding: 7px 14px; font-size: .88rem; font-weight: 500; }
+  .rec { width: 8px; height: 8px; border-radius: 50%; background: #ff6b5e; }
+  .self { position: absolute; right: 14px; top: 64px; width: 26%; aspect-ratio: 3 / 4; border-radius: 14px; overflow: hidden; border: 2px solid rgba(255,255,255,.9); background: #e8f1ee; }
+  .self svg { width: 100%; height: 100%; display: block; }
+  .controls { position: absolute; left: 0; right: 0; bottom: 16px; display: flex; justify-content: center; gap: 12px; }
+  .ctl { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.92); color: var(--pine); }
+  .ctl svg { width: 22px; height: 22px; }
+  .ctl.end { background: #d64545; color: var(--white); }
+  .float {
+    position: absolute; left: -22px; display: flex; align-items: center; gap: 10px; background: var(--white);
+    border-radius: 16px; padding: 10px 16px 10px 12px; font-size: .92rem; font-weight: 500;
+    box-shadow: 0 16px 30px -14px rgba(20,64,58,.5); opacity: 0; transform: translateY(14px);
+    animation: rise .6s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  .float .ic { width: 30px; height: 30px; border-radius: 50%; background: var(--mint); color: var(--pine); display: grid; place-items: center; flex: none; }
+  .float .ic svg { width: 16px; height: 16px; }
+  .float.f1 { bottom: 118px; animation-delay: 1.6s; }
+  .float.f2 { bottom: 58px; left: auto; right: -18px; animation-delay: 3s; }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+
+  /* Booking section */
+  .book { background: var(--white); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .sec-head { max-width: 40em; margin-bottom: 28px; }
+  .sec-head h2 { font-size: clamp(1.9rem, 4.2vw, 3rem); line-height: 1.06; font-weight: 700; }
+  .sec-head p { color: var(--muted); margin-top: 12px; font-size: 1.1rem; }
+  .filters { display: flex; flex-direction: column; gap: 14px; margin-bottom: 18px; }
+  .filter-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .select { min-height: 44px; border-radius: 999px; border: 1px solid var(--line); background: var(--white); padding: 0 16px; }
+  .count { color: var(--muted); font-size: .95rem; margin-bottom: 8px; }
+  .docs { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+  .doc { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 20px; align-items: center; padding: 22px 8px; border-bottom: 1px solid var(--line); }
+  .avatar { width: 68px; height: 68px; border-radius: 50%; display: grid; place-items: center; font-family: var(--display); font-weight: 700; font-size: 1.35rem; color: var(--pine); position: relative; flex: none; }
+  .avatar.on::after { content: ""; position: absolute; right: 2px; bottom: 2px; width: 14px; height: 14px; border-radius: 50%; background: #2fb67c; border: 3px solid var(--white); }
+  .doc h3 { font-size: 1.3rem; font-weight: 700; }
+  .doc .spec { font-weight: 500; margin-top: 2px; }
+  .doc .treats, .doc .langs { color: var(--muted); font-size: .95rem; }
+  .rating { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; font-size: .95rem; margin-top: 4px; }
+  .rating svg { width: 16px; height: 16px; color: var(--sun); fill: currentColor; }
+  .rating span { color: var(--muted); font-weight: 400; }
+  .doc-side { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; min-width: 190px; }
+  .doc-side .next { font-size: .95rem; color: var(--muted); }
+  .doc-side .next b { color: var(--pine); font-weight: 600; }
+  .doc-side .fee { font-family: var(--display); font-weight: 700; font-size: 1.35rem; color: var(--pine); }
+  .doc-side .fee small { font-family: var(--body); font-weight: 400; font-size: .85rem; color: var(--muted); }
+  .doc-side .btn { margin-top: 8px; }
+  .empty { padding: 48px 0; text-align: center; color: var(--muted); }
+
+  /* How it works */
+  .how-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; counter-reset: s; }
+  .step { position: relative; padding-top: 8px; }
+  .step .num { width: 52px; height: 52px; border-radius: 50%; background: var(--pine); color: var(--white); display: grid; place-items: center; font-family: var(--display); font-weight: 700; font-size: 1.3rem; margin-bottom: 18px; }
+  .step h3 { font-size: 1.45rem; margin-bottom: 8px; }
+  .step p { color: var(--muted); }
+  .step:not(:last-child)::after { content: ""; position: absolute; top: 34px; left: 68px; right: -28px; border-top: 2px dashed var(--line); }
+
+  /* Conditions */
+  .treat { background: var(--mint); }
+  .treat-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 80px); align-items: start; }
+  .treat-text { font-family: var(--display); font-size: clamp(1.6rem, 3.6vw, 2.5rem); line-height: 1.22; font-weight: 600; letter-spacing: -0.02em; color: var(--pine); }
+  .treat-text em { font-style: normal; color: var(--pine-2); opacity: .75; }
+  .inperson { background: var(--sun-soft); border-radius: var(--r-md); padding: 26px; }
+  .inperson h3 { font-size: 1.3rem; margin-bottom: 8px; color: #4a3500; }
+  .inperson p { color: #5b4a1a; font-size: .98rem; }
+  .inperson ul { margin: 12px 0 0; padding-left: 20px; color: #4a3500; }
+  .inperson li { margin-bottom: 4px; }
+
+  /* Voices */
+  .voices { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 64px); align-items: start; }
+  .voice-main blockquote { margin: 0; font-family: var(--display); font-size: clamp(1.6rem, 3.4vw, 2.4rem); line-height: 1.2; font-weight: 600; color: var(--pine); letter-spacing: -0.02em; }
+  .who { margin-top: 18px; color: var(--muted); }
+  .who b { color: var(--ink); }
+  .voice-side { display: flex; flex-direction: column; gap: 28px; border-left: 3px solid var(--mint); padding-left: 28px; }
+  .voice-side blockquote { margin: 0; font-size: 1.1rem; }
+
+  /* FAQ */
+  .faq { background: var(--white); border-top: 1px solid var(--line); }
+  .faq-list { max-width: 820px; border-top: 1px solid var(--line); }
+  details { border-bottom: 1px solid var(--line); }
+  summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 4px; font-family: var(--display); font-weight: 600; font-size: 1.2rem; color: var(--pine); }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font-size: 1.8rem; line-height: 1; font-weight: 500; transition: transform .2s; flex: none; }
+  details[open] summary::after { transform: rotate(45deg); }
+  details p { padding: 0 4px 22px; color: var(--muted); max-width: 40em; }
+
+  /* Footer */
+  .foot { background: var(--pine); color: var(--mint); padding: 56px 0 40px; }
+  .foot a:focus-visible { outline-color: var(--sun); }
+  .foot-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr)); gap: 40px; }
+  .foot .logo { color: var(--white); }
+  .foot p.tag { margin-top: 12px; max-width: 26em; opacity: .85; }
+  .foot h4 { font-family: var(--display); color: var(--white); font-size: 1.05rem; margin-bottom: 10px; }
+  .foot ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+  .foot ul a { text-decoration: none; opacity: .88; }
+  .foot ul a:hover { text-decoration: underline; opacity: 1; }
+  .legal { margin-top: 40px; padding-top: 22px; border-top: 1px solid rgba(207,238,226,.25); font-size: .9rem; opacity: .85; max-width: 60em; }
+
+  /* Booking dialog */
+  dialog { border: 0; padding: 0; background: transparent; width: min(600px, calc(100% - 24px)); max-width: none; max-height: none; color: var(--ink); overflow: visible; }
+  dialog::backdrop { background: rgba(10, 30, 26, .55); backdrop-filter: blur(3px); }
+  .dlg { display: flex; flex-direction: column; background: var(--white); border-radius: 28px; max-height: min(90vh, 780px); max-height: min(90dvh, 780px); overflow: hidden; box-shadow: 0 40px 80px -30px rgba(0,0,0,.6); }
+  .dlg-head { display: flex; align-items: center; gap: 14px; padding: 18px 20px 14px; border-bottom: 1px solid var(--line); }
+  .dlg-head .avatar { width: 52px; height: 52px; font-size: 1.1rem; }
+  .dlg-head h2 { font-size: 1.25rem; }
+  .dlg-head p { color: var(--muted); font-size: .92rem; }
+  .dlg-head .grow { flex: 1; min-width: 0; }
+  .x { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--white); display: grid; place-items: center; flex: none; }
+  .x svg { width: 20px; height: 20px; }
+  .steps { list-style: none; display: flex; gap: 8px; margin: 0; padding: 12px 20px; background: var(--mint-2); font-size: .88rem; color: var(--muted); }
+  .steps li { flex: 1; padding-top: 8px; border-top: 4px solid var(--line); font-weight: 500; }
+  .steps li.done, .steps li[aria-current="step"] { border-top-color: var(--pine); color: var(--pine); }
+  .dlg-body { padding: 20px; overflow-y: auto; flex: 1; }
+  .dlg-body fieldset { border: 0; padding: 0; margin: 0 0 22px; min-width: 0; }
+  .dlg-body legend, .field label, .lbl { font-weight: 600; margin-bottom: 8px; display: block; padding: 0; }
+  .modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .mode input { position: absolute; opacity: 0; }
+  .mode span { display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 64px; justify-content: center; border: 1.5px solid var(--line); border-radius: 14px; padding: 8px; text-align: center; font-weight: 600; cursor: pointer; }
+  .mode span small { font-weight: 400; color: var(--muted); }
+  .mode input:checked + span { border-color: var(--pine); background: var(--mint-2); }
+  .mode input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .days { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; }
+  .day { flex: none; min-width: 74px; min-height: 64px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--white); padding: 6px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .day small { color: var(--muted); }
+  .day b { font-family: var(--display); font-size: 1.1rem; }
+  .day[aria-pressed="true"] { background: var(--pine); border-color: var(--pine); color: var(--white); }
+  .day[aria-pressed="true"] small { color: var(--mint); }
+  .day[disabled] { opacity: .4; cursor: not-allowed; }
+  .slot-group { margin-bottom: 14px; }
+  .slot-group h4 { font-size: .95rem; color: var(--muted); font-weight: 500; margin-bottom: 8px; }
+  .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+  .slot { min-height: 44px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--white); font-weight: 500; }
+  .slot:hover { border-color: var(--pine); }
+  .slot[aria-pressed="true"] { background: var(--pine); color: var(--white); border-color: var(--pine); }
+  .note { color: var(--muted); padding: 16px; background: var(--paper); border-radius: 12px; }
+  .field { margin-bottom: 16px; }
+  .field input, .field select, .field textarea { width: 100%; min-height: 48px; border: 1.5px solid var(--line); border-radius: var(--r-sm); padding: 10px 14px; background: var(--white); }
+  .field textarea { min-height: 96px; resize: vertical; }
+  .field .hint { color: var(--muted); font-size: .88rem; margin-top: 4px; }
+  .field .err { color: var(--danger); font-size: .9rem; margin-top: 4px; font-weight: 500; }
+  .field.bad input, .field.bad select, .field.bad textarea { border-color: var(--danger); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .check { display: flex; gap: 10px; align-items: flex-start; font-size: .95rem; }
+  .check input { width: 22px; height: 22px; margin-top: 2px; flex: none; accent-color: var(--pine); }
+  .check.bad { color: var(--danger); }
+  .dlg-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 20px 18px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+  .dlg-foot .sum { color: var(--muted); font-size: .95rem; flex: 1 1 180px; }
+  .dlg-foot .sum b { color: var(--ink); }
+  .dlg-foot .btns { display: flex; gap: 10px; margin-left: auto; }
+  .done-wrap { text-align: center; padding: 6px 0 4px; }
+  .done-wrap .tick { width: 72px; height: 72px; border-radius: 50%; background: var(--mint); color: var(--pine); display: grid; place-items: center; margin: 0 auto 14px; }
+  .done-wrap .tick svg { width: 36px; height: 36px; }
+  .done-wrap h2 { font-size: 1.8rem; }
+  .done-wrap > p { color: var(--muted); margin-top: 8px; }
+  .summary { text-align: left; margin: 22px 0 0; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  .summary div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 16px; }
+  .summary div:nth-child(odd) { background: var(--paper); }
+  .summary dt { color: var(--muted); }
+  .summary dd { margin: 0; font-weight: 600; text-align: right; }
+
+  @media (max-width: 900px) {
+    .hero-grid, .treat-grid, .voices { grid-template-columns: 1fr; }
+    .how-grid { grid-template-columns: 1fr; gap: 28px; }
+    .step:not(:last-child)::after { display: none; }
+    .foot-grid { grid-template-columns: 1fr 1fr; }
+    .foot-grid > :first-child { grid-column: 1 / -1; }
+    .voice-side { border-left: 0; padding-left: 0; border-top: 3px solid var(--mint); padding-top: 24px; }
+    .float.f1 { left: 8px; }
+    .float.f2 { right: 8px; }
+  }
+  @media (max-width: 760px) {
+    .menu-btn { display: grid; }
+    .nav { display: none; position: absolute; left: 0; right: 0; top: 100%; flex-direction: column; align-items: stretch; gap: 0; background: var(--paper); border-bottom: 1px solid var(--line); padding: 8px 20px 20px; }
+    .nav.open { display: flex; }
+    .nav a:not(.btn) { padding: 14px 2px; border-bottom: 1px solid var(--line); }
+    .nav .btn { margin-top: 14px; }
+    .doc { grid-template-columns: auto minmax(0, 1fr); gap: 14px 16px; }
+    .doc-side { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; text-align: left; min-width: 0; }
+    .doc-side .btn { margin-top: 0; }
+    .avatar { width: 56px; height: 56px; font-size: 1.15rem; }
+  }
+  @media (max-width: 600px) {
+    dialog { width: 100%; margin: auto 0 0; }
+    .dlg { border-radius: 24px 24px 0 0; max-height: 94vh; max-height: 94dvh; }
+    .two { grid-template-columns: 1fr; }
+    .modes { grid-template-columns: 1fr; }
+    .mode span { flex-direction: row; justify-content: space-between; padding: 8px 16px; min-height: 52px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .float { animation: none; opacity: 1; transform: none; }
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap head-row">
+    <a class="logo" href="#top" aria-label="Hale home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="10" fill="#14403a"/><path d="M13 7h6v6h6v6h-6v6h-6v-6H7v-6h6z" fill="#cfeee2"/><circle cx="23" cy="9" r="3" fill="#f4b942"/></svg>
+      Hale
+    </a>
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href="#book">Doctors</a>
+      <a href="#how">How it works</a>
+      <a href="#treat">What we treat</a>
+      <a href="#faq">Questions</a>
+      <a class="btn btn-pine btn-sm" href="#book">Book a consult</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="live"><span class="dot" aria-hidden="true"></span><span id="liveText">Checking who is free…</span></p>
+        <h1>A doctor on your phone, within the hour.</h1>
+        <p class="lede">Book a video, audio or chat consultation with licensed doctors. Pick a time that suits you and get a written prescription when you need one.</p>
+        <div class="hero-cta">
+          <a class="btn btn-sun" href="#book">Find a doctor</a>
+          <a class="btn btn-ghost" href="#how">See how it works</a>
+        </div>
+        <div class="quick">
+          <p>Start with what is bothering you</p>
+          <div class="chips" id="quick"></div>
+        </div>
+        <ul class="assure">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.500-3.300 8-8 9-4.700-1-8-4.500-8-9V6z"/><path d="M8.500 12l2.500 2.500 4.500-5"/></svg>Licensed, verified doctors</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Private consultations</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h8l4 4v14H7z"/><path d="M10 12h6M10 16h6"/></svg>Prescription on request</li>
+        </ul>
+      </div>
+
+      <div class="call-wrap" aria-hidden="true">
+        <div class="call">
+          <svg class="doctor" viewBox="0 0 400 500" preserveAspectRatio="xMidYMax slice">
+            <circle cx="310" cy="130" r="130" fill="#b9e4d3"/>
+            <circle cx="60" cy="300" r="90" fill="#c4e9db"/>
+            <path d="M30 500C30 400 105 358 200 358s170 42 170 142z" fill="#ffffff"/>
+            <path d="M150 368l50 86 50-86z" fill="#1d5a51"/>
+            <rect x="178" y="296" width="44" height="76" rx="20" fill="#c58a66"/>
+            <circle cx="140" cy="246" r="13" fill="#c58a66"/>
+            <circle cx="260" cy="246" r="13" fill="#c58a66"/>
+            <ellipse cx="200" cy="240" rx="62" ry="74" fill="#d19a74"/>
+            <path d="M134 236C124 156 178 128 218 136c48 8 66 56 54 104-12-38-34-52-72-52-34 0-54 18-66 48z" fill="#1b1411"/>
+            <circle cx="268" cy="150" r="26" fill="#1b1411"/>
+            <circle cx="178" cy="252" r="4.500" fill="#1b1411"/>
+            <circle cx="222" cy="252" r="4.500" fill="#1b1411"/>
+            <path d="M168 238q10-7 20-1M212 237q10-6 20 1" stroke="#1b1411" stroke-width="3.500" fill="none" stroke-linecap="round"/>
+            <path d="M180 284q20 18 40 0" stroke="#7a3f2a" stroke-width="4.500" fill="none" stroke-linecap="round"/>
+            <path d="M152 370c-12 62 10 104 48 104s60-42 48-104" stroke="#26403c" stroke-width="7" fill="none" stroke-linecap="round"/>
+            <circle cx="200" cy="480" r="13" fill="#9fb4ae" stroke="#26403c" stroke-width="4"/>
+          </svg>
+          <div class="call-top">
+            <span class="pill"><span class="rec"></span><span id="callStatus">Connecting…</span></span>
+            <span class="pill" id="callTimer">00:00</span>
+          </div>
+          <div class="self">
+            <svg viewBox="0 0 90 120"><rect width="90" height="120" fill="#e3efea"/><path d="M6 120c0-24 16-34 39-34s39 10 39 34z" fill="#5d7f9a"/><rect x="38" y="62" width="14" height="22" rx="6" fill="#e0b08a"/><ellipse cx="45" cy="50" rx="19" ry="22" fill="#e8bc98"/><path d="M26 48c-2-20 12-28 22-26 12 1 20 12 16 26-4-10-10-14-20-14s-14 5-18 14z" fill="#3a2a22"/></svg>
+          </div>
+          <div class="controls">
+            <span class="ctl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
+            <span class="ctl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="M16 10l5-3v10l-5-3z"/></svg></span>
+            <span class="ctl end"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15c5-5 13-5 18 0l-2.500 2.500-3-1.500v-2.500a10 10 0 0 0-7 0V16l-3 1.500z"/></svg></span>
+          </div>
+        </div>
+        <div class="float f1"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.500" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span>Dr. Meera Iyer has joined</div>
+        <div class="float f2"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h8l4 4v14H7z"/><path d="M10 12h6M10 16h6"/></svg></span>Prescription sent</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Booking -->
+  <section class="section book" id="book">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Choose a doctor and a time</h2>
+        <p>Every doctor shows their next free slot. Pick one, tell us a little about you, and you are booked.</p>
+      </div>
+      <div class="filters">
+        <div class="chips" id="specChips" role="group" aria-label="Filter by speciality"></div>
+        <div class="filter-row">
+          <label class="sr" for="langSel">Language</label>
+          <select class="select" id="langSel"></select>
+          <label class="sr" for="sortSel">Sort doctors</label>
+          <select class="select" id="sortSel">
+            <option value="earliest">Earliest available</option>
+            <option value="fee">Lowest fee</option>
+            <option value="exp">Most experienced</option>
+          </select>
+          <button class="chip" id="todayBtn" type="button" aria-pressed="false">Free today</button>
+        </div>
+      </div>
+      <p class="count" id="count" aria-live="polite"></p>
+      <div class="docs" id="docs"></div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="section" id="how">
+    <div class="wrap">
+      <div class="sec-head"><h2>Three steps, no waiting room</h2></div>
+      <div class="how-grid">
+        <div class="step">
+          <div class="num">1</div>
+          <h3>Choose a doctor</h3>
+          <p>Filter by speciality or language. See fees, experience and the next free time before you decide.</p>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <h3>Pick a time</h3>
+          <p>Choose video, audio or chat, then a slot from today onwards. Add a short note about what is wrong.</p>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <h3>Meet online</h3>
+          <p>Open the link we text you at the booked time. If the doctor prescribes, you receive it in writing after the call.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What we treat -->
+  <section class="section treat" id="treat">
+    <div class="wrap treat-grid">
+      <p class="treat-text">
+        Fever, cough and the flu. Rashes, acne and hair fall. A child who will not stop coughing. Period pain and irregular cycles. Poor sleep, worry and low mood. Sugar and thyroid check-ins. Back pain, allergies, stomach upsets. <em>And repeat prescriptions, so you do not have to queue for them.</em>
+      </p>
+      <aside class="inperson" aria-labelledby="ipTitle">
+        <h3 id="ipTitle">When to go in person instead</h3>
+        <p>Online care is not right for emergencies. Call your local emergency number or go to the nearest hospital if you have:</p>
+        <ul>
+          <li>Chest pain or pressure</li>
+          <li>Trouble breathing</li>
+          <li>Heavy bleeding</li>
+          <li>Sudden weakness, confusion or fainting</li>
+          <li>Thoughts of harming yourself</li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Voices (sample feedback: replace with real patient quotes) -->
+  <section class="section" id="voices">
+    <div class="wrap voices">
+      <figure class="voice-main" style="margin:0">
+        <blockquote>My daughter had a fever at 9 pm. By 9:40 we had spoken to a paediatrician and knew what to do overnight.</blockquote>
+        <figcaption class="who"><b>Priya</b>, mother of two</figcaption>
+      </figure>
+      <div class="voice-side">
+        <figure style="margin:0">
+          <blockquote>I could explain my skin problem and show it on camera. The doctor sent a clear routine afterwards.</blockquote>
+          <figcaption class="who"><b>Aisha</b>, student</figcaption>
+        </figure>
+        <figure style="margin:0">
+          <blockquote>Refilling my regular medicines used to cost me half a day. Now it takes a ten-minute call.</blockquote>
+          <figcaption class="who"><b>Ramesh</b>, 58</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section faq" id="faq">
+    <div class="wrap">
+      <div class="sec-head"><h2>Questions people ask</h2></div>
+      <div class="faq-list">
+        <details>
+          <summary>How do I join my consultation?</summary>
+          <p>We send a joining link by SMS and email once you book, and again shortly before your slot. Open it on your phone or computer. You do not need to install anything.</p>
+        </details>
+        <details>
+          <summary>Will I get a prescription?</summary>
+          <p>If the doctor decides medicine is needed and it is safe to prescribe online, you receive a written prescription after the call. Some conditions need an in-person examination or tests first, and the doctor will tell you so.</p>
+        </details>
+        <details>
+          <summary>Is my consultation private?</summary>
+          <p>Yes. Only you and your doctor take part in the call, and your notes are visible only to you and the doctors you choose to share them with.</p>
+        </details>
+        <details>
+          <summary>Can I change or cancel a booking?</summary>
+          <p>You can reschedule or cancel from the link in your confirmation message, up to 30 minutes before your slot.</p>
+        </details>
+        <details>
+          <summary>What if the doctor wants me to get tests?</summary>
+          <p>The doctor will explain which tests you need and why. You can take the request to any lab, then book a follow-up call to go through the results.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="logo" href="#top">
+          <svg viewBox="0 0 32 32" aria-hidden="true" style="width:32px;height:32px"><rect width="32" height="32" rx="10" fill="#cfeee2"/><path d="M13 7h6v6h6v6h-6v6h-6v-6H7v-6h6z" fill="#14403a"/><circle cx="23" cy="9" r="3" fill="#f4b942"/></svg>
+          Hale
+        </a>
+        <p class="tag">Doctors you can reach today, from wherever you are.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="#book">Find a doctor</a></li>
+          <li><a href="#how">How it works</a></li>
+          <li><a href="#faq">Questions</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#top">About Hale</a></li>
+          <li><a href="#top">Privacy</a></li>
+          <li><a href="#top">Terms of use</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="legal">Hale is not for emergencies. If you think you are having a medical emergency, call your local emergency number straight away. Online consultations do not replace in-person care when an examination is needed.</p>
+  </div>
+</footer>
+
+<!-- Booking dialog -->
+<dialog id="dlg" aria-labelledby="dlgTitle"><div class="dlg" id="dlgInner"></div></dialog>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- Settings and sample data ---------- */
+  var CURRENCY = "₹";
+  var SPECIALITIES = ["General physician", "Skin & hair", "Child health", "Women's health", "Mental wellbeing", "Diabetes & thyroid"];
+  var TINTS = ["#cfeee2", "#fde3a6", "#d3e4fb", "#f8d4db", "#e1d9f6", "#d7efc5"];
+  // hours = working window in 24h decimals; open = % of half-hour slots that are free (sample availability)
+  var DOCTORS = [
+    { id: "rao", name: "Dr. Anita Rao", spec: "General physician", years: 14, langs: ["English", "Hindi", "Kannada"], rating: 4.9, reviews: 2140, fee: 399, hours: [8, 15], open: 60, treats: "Fever, infections, long-term care" },
+    { id: "qureshi", name: "Dr. Imran Qureshi", spec: "General physician", years: 9, langs: ["English", "Hindi", "Urdu"], rating: 4.8, reviews: 1320, fee: 349, hours: [12, 21], open: 55, treats: "Cough, stomach upsets, check-ups" },
+    { id: "iyer", name: "Dr. Meera Iyer", spec: "Skin & hair", years: 11, langs: ["English", "Tamil", "Hindi"], rating: 4.9, reviews: 1760, fee: 599, hours: [10, 18], open: 50, treats: "Acne, rashes, hair fall" },
+    { id: "mehta", name: "Dr. Rohan Mehta", spec: "Skin & hair", years: 7, langs: ["English", "Hindi", "Gujarati"], rating: 4.7, reviews: 640, fee: 499, hours: [15, 21.5], open: 62, treats: "Eczema, allergies, fungal infections" },
+    { id: "pillai", name: "Dr. Sunita Pillai", spec: "Child health", years: 16, langs: ["English", "Malayalam", "Hindi"], rating: 4.9, reviews: 2480, fee: 549, hours: [9, 17], open: 48, treats: "Fever, growth, vaccinations advice" },
+    { id: "subra", name: "Dr. Karthik Subramanian", spec: "Child health", years: 8, langs: ["English", "Tamil", "Kannada"], rating: 4.8, reviews: 910, fee: 449, hours: [14, 21.5], open: 64, treats: "Cough, colds, feeding concerns" },
+    { id: "siddiqui", name: "Dr. Farah Siddiqui", spec: "Women's health", years: 13, langs: ["English", "Hindi", "Urdu"], rating: 4.9, reviews: 1890, fee: 649, hours: [10, 19], open: 52, treats: "Periods, PCOS, pregnancy questions" },
+    { id: "narayan", name: "Dr. Lakshmi Narayan", spec: "Women's health", years: 20, langs: ["English", "Kannada", "Telugu"], rating: 4.8, reviews: 3010, fee: 799, hours: [8, 14], open: 45, treats: "Menopause, fertility, second opinions" },
+    { id: "bhatt", name: "Dr. Arjun Bhatt", spec: "Mental wellbeing", years: 10, langs: ["English", "Hindi", "Marathi"], rating: 4.8, reviews: 980, fee: 799, hours: [11, 20], open: 50, treats: "Anxiety, low mood, sleep problems" },
+    { id: "kulkarni", name: "Dr. Neha Kulkarni", spec: "Mental wellbeing", years: 8, langs: ["English", "Hindi", "Marathi"], rating: 4.9, reviews: 1150, fee: 699, hours: [14, 21.5], open: 58, treats: "Stress, relationships, counselling" },
+    { id: "desai", name: "Dr. Vivek Desai", spec: "Diabetes & thyroid", years: 15, langs: ["English", "Hindi", "Gujarati"], rating: 4.8, reviews: 1670, fee: 599, hours: [9, 16], open: 55, treats: "Blood sugar, thyroid, weight" },
+    { id: "menon", name: "Dr. Pooja Menon", spec: "Diabetes & thyroid", years: 9, langs: ["English", "Malayalam", "Tamil"], rating: 4.7, reviews: 720, fee: 549, hours: [13, 20.5], open: 60, treats: "Diabetes follow-ups, thyroid tests" }
+  ];
+
+  /* ---------- Helpers ---------- */
+  function $(s) { return document.querySelector(s); }
+  function pad(n) { return String(n).padStart(2, "0"); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function addDays(d, n) { var x = new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); return x; }
+  function sameDay(a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); }
+  function dkey(d) { return d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate(); }
+  function fmtTime(m) { var h = Math.floor(m / 60), mm = m % 60, ap = h >= 12 ? "pm" : "am"; return (h % 12 || 12) + ":" + pad(mm) + " " + ap; }
+  function fmtDate(d) { return d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" }); }
+  function dayLabel(offset, d) { return offset === 0 ? "Today" : offset === 1 ? "Tomorrow" : fmtDate(d); }
+  function initials(n) { var p = n.replace("Dr. ", "").split(" "); return (p[0][0] + p[p.length - 1][0]).toUpperCase(); }
+  function docById(id) { return DOCTORS.filter(function (d) { return d.id === id; })[0]; }
+  function priceFor(doc, mode) { var f = mode === "video" ? 1 : mode === "audio" ? 0.8 : 0.6; return Math.round(doc.fee * f / 10) * 10; }
+  function modeName(m) { return m === "video" ? "Video call" : m === "audio" ? "Audio call" : "Chat"; }
+
+  /* ---------- Availability (sample logic; replace with a real API) ---------- */
+  function isOpen(doc, day, mins, now) {
+    if (sameDay(day, now) && mins <= now.getHours() * 60 + now.getMinutes() + 20) return false;
+    return hash(doc.id + dkey(day) + mins) % 100 < doc.open;
+  }
+  function slotsFor(doc, day, now) {
+    var out = [], start = doc.hours[0] * 60, end = doc.hours[1] * 60;
+    for (var m = start; m < end; m += 30) if (isOpen(doc, day, m, now)) out.push(m);
+    return out;
+  }
+  function nextSlot(doc, now) {
+    for (var d = 0; d < 14; d++) {
+      var day = addDays(now, d), s = slotsFor(doc, day, now);
+      if (s.length) return { offset: d, day: day, mins: s[0] };
+    }
+    return null;
+  }
+
+  /* ---------- Page state ---------- */
+  var F = { spec: "All", lang: "Any", sort: "earliest", today: false };
+
+  function renderChips() {
+    var all = ["All"].concat(SPECIALITIES);
+    $("#specChips").innerHTML = all.map(function (s) {
+      return '<button type="button" class="chip" data-s="' + esc(s) + '" aria-pressed="' + (F.spec === s) + '">' + esc(s) + "</button>";
+    }).join("");
+    $("#quick").innerHTML = SPECIALITIES.map(function (s) {
+      return '<button type="button" class="chip" data-q="' + esc(s) + '">' + esc(s) + "</button>";
+    }).join("");
+    var langs = [];
+    DOCTORS.forEach(function (d) { d.langs.forEach(function (l) { if (langs.indexOf(l) < 0) langs.push(l); }); });
+    langs.sort();
+    $("#langSel").innerHTML = '<option value="Any">Any language</option>' + langs.map(function (l) {
+      return '<option value="' + l + '"' + (F.lang === l ? " selected" : "") + ">" + l + "</option>";
+    }).join("");
+  }
+
+  function renderDoctors() {
+    var now = new Date();
+    var list = DOCTORS.map(function (d) { d.next = nextSlot(d, now); return d; }).filter(function (d) {
+      if (F.spec !== "All" && d.spec !== F.spec) return false;
+      if (F.lang !== "Any" && d.langs.indexOf(F.lang) < 0) return false;
+      if (F.today && !(d.next && d.next.offset === 0)) return false;
+      return true;
+    });
+    list.sort(function (a, b) {
+      if (F.sort === "fee") return a.fee - b.fee;
+      if (F.sort === "exp") return b.years - a.years;
+      var ak = a.next ? a.next.offset * 2000 + a.next.mins : 1e9, bk = b.next ? b.next.offset * 2000 + b.next.mins : 1e9;
+      return ak - bk;
+    });
+    $("#count").textContent = list.length + (list.length === 1 ? " doctor" : " doctors") + " available to book";
+    if (!list.length) {
+      $("#docs").innerHTML = '<div class="empty"><p>No doctors match these filters.</p><p style="margin-top:12px"><button class="btn btn-ghost btn-sm" type="button" id="resetF">Clear filters</button></p></div>';
+      return;
+    }
+    var nowMins = now.getHours() * 60 + now.getMinutes();
+    $("#docs").innerHTML = list.map(function (d) {
+      var tint = TINTS[SPECIALITIES.indexOf(d.spec)];
+      var soon = d.next && d.next.offset === 0 && d.next.mins - nowMins <= 60;
+      var nextTxt = d.next ? "<b>" + dayLabel(d.next.offset, d.next.day) + ", " + fmtTime(d.next.mins) + "</b>" : "No slots this fortnight";
+      return '<article class="doc">' +
+        '<div class="avatar' + (soon ? " on" : "") + '" style="background:' + tint + '" aria-hidden="true">' + initials(d.name) + "</div>" +
+        '<div class="doc-main"><h3>' + esc(d.name) + "</h3>" +
+        '<p class="spec">' + esc(d.spec) + ", " + d.years + " years</p>" +
+        '<p class="treats">' + esc(d.treats) + "</p>" +
+        '<p class="langs">Speaks ' + d.langs.join(", ") + "</p>" +
+        '<p class="rating"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.500l2.900 6.100 6.600.8-4.900 4.600 1.300 6.600L12 17.300 6.100 20.600l1.300-6.600L2.500 9.400l6.600-.8z"/></svg>' + d.rating.toFixed(1) + " <span>(" + d.reviews.toLocaleString("en-IN") + " consults)</span></p></div>" +
+        '<div class="doc-side"><p class="next">Next free: ' + nextTxt + "</p>" +
+        '<p class="fee">' + CURRENCY + d.fee + ' <small>video</small></p>' +
+        '<button class="btn btn-sun btn-sm" type="button" data-book="' + d.id + '"' + (d.next ? "" : " disabled") + ' aria-label="Book a consult with ' + esc(d.name) + '">Book consult</button></div>' +
+        "</article>";
+    }).join("");
+  }
+
+  function renderLive() {
+    var now = new Date(), nowMins = now.getHours() * 60 + now.getMinutes(), n = 0;
+    DOCTORS.forEach(function (d) { var s = nextSlot(d, now); if (s && s.offset === 0 && s.mins - nowMins <= 60) n++; });
+    $("#liveText").textContent = n > 0 ? n + (n === 1 ? " doctor can see you" : " doctors can see you") + " in the next hour" : "Book a slot for later today or tomorrow";
+  }
+
+  /* ---------- Page events ---------- */
+  function goToBook() { $("#book").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); }
+  document.addEventListener("click", function (e) {
+    var t = e.target;
+    var sc = t.closest("[data-s]"); if (sc) { F.spec = sc.dataset.s; renderChips(); renderDoctors(); return; }
+    var q = t.closest("[data-q]"); if (q) { F.spec = q.dataset.q; renderChips(); renderDoctors(); goToBook(); return; }
+    var bk = t.closest("[data-book]"); if (bk) { openBooking(bk.dataset.book); return; }
+    if (t.id === "resetF") { F = { spec: "All", lang: "Any", sort: "earliest", today: false }; $("#sortSel").value = "earliest"; $("#todayBtn").setAttribute("aria-pressed", "false"); renderChips(); renderDoctors(); }
+  });
+  $("#langSel").addEventListener("change", function (e) { F.lang = e.target.value; renderDoctors(); });
+  $("#sortSel").addEventListener("change", function (e) { F.sort = e.target.value; renderDoctors(); });
+  $("#todayBtn").addEventListener("click", function (e) { F.today = !F.today; e.currentTarget.setAttribute("aria-pressed", F.today); renderDoctors(); });
+
+  var menuBtn = $("#menuBtn"), nav = $("#nav");
+  menuBtn.addEventListener("click", function () {
+    var open = nav.classList.toggle("open");
+    menuBtn.setAttribute("aria-expanded", open);
+  });
+  nav.addEventListener("click", function (e) { if (e.target.closest("a")) { nav.classList.remove("open"); menuBtn.setAttribute("aria-expanded", "false"); } });
+
+  /* ---------- Hero call mock-up (one sequence on load) ---------- */
+  (function () {
+    var secs = 0, status = $("#callStatus"), timer = $("#callTimer");
+    setTimeout(function () { status.textContent = "Connected"; }, 1200);
+    setInterval(function () { secs++; timer.textContent = pad(Math.floor(secs / 60)) + ":" + pad(secs % 60); }, 1000);
+  })();
+
+  /* ---------- Booking dialog ---------- */
+  var dlg = $("#dlg"), inner = $("#dlgInner");
+  var B = null;
+
+  function openBooking(id) {
+    var doc = docById(id), now = new Date(), nx = nextSlot(doc, now);
+    B = { doc: doc, now: now, day: nx ? nx.offset : 0, mins: null, mode: "video", step: 1, form: { who: "Myself", name: "", age: "", phone: "", concern: "", ok: false }, errors: {}, booking: null };
+    drawDialog();
+    if (typeof dlg.showModal === "function") dlg.showModal(); else dlg.setAttribute("open", "");
+    document.body.classList.add("locked");
+  }
+  function closeDialog() { if (dlg.open) dlg.close(); }
+  dlg.addEventListener("close", function () { document.body.classList.remove("locked"); });
+  dlg.addEventListener("click", function (e) { if (e.target === dlg) closeDialog(); });
+
+  function stepsHtml() {
+    var names = ["Pick a time", "Your details", "Confirmed"];
+    return '<ol class="steps" aria-label="Booking progress">' + names.map(function (n, i) {
+      var cls = B.step > i + 1 ? "done" : "";
+      return "<li" + (cls ? ' class="' + cls + '"' : "") + (B.step === i + 1 ? ' aria-current="step"' : "") + ">" + n + "</li>";
+    }).join("") + "</ol>";
+  }
+
+  function stepTime() {
+    var doc = B.doc, html = "";
+    html += '<fieldset><legend>How would you like to consult?</legend><div class="modes">';
+    ["video", "audio", "chat"].forEach(function (m) {
+      html += '<label class="mode"><input type="radio" name="mode" value="' + m + '"' + (B.mode === m ? " checked" : "") + "><span>" + modeName(m) + "<small>" + CURRENCY + priceFor(doc, m) + "</small></span></label>";
+    });
+    html += "</div></fieldset>";
+    html += '<fieldset><legend>Choose a day</legend><div class="days">';
+    for (var i = 0; i < 7; i++) {
+      var d = addDays(B.now, i), n = slotsFor(doc, d, B.now).length;
+      html += '<button type="button" class="day" data-day="' + i + '" aria-pressed="' + (B.day === i) + '"' + (n ? "" : " disabled") + ">" +
+        "<small>" + (i === 0 ? "Today" : i === 1 ? "Tomorrow" : d.toLocaleDateString("en-IN", { weekday: "short" })) + "</small><b>" + d.getDate() + " " + d.toLocaleDateString("en-IN", { month: "short" }) + "</b></button>";
+    }
+    html += "</div></fieldset>";
+    var slots = slotsFor(doc, addDays(B.now, B.day), B.now);
+    html += '<fieldset style="margin:0"><legend>Choose a time</legend>';
+    if (!slots.length) {
+      html += '<p class="note">No slots left on this day. Try another day.</p>';
+    } else {
+      [["Morning", 0, 720], ["Afternoon", 720, 1020], ["Evening", 1020, 1440]].forEach(function (g) {
+        var part = slots.filter(function (m) { return m >= g[1] && m < g[2]; });
+        if (!part.length) return;
+        html += '<div class="slot-group"><h4>' + g[0] + '</h4><div class="slots">' + part.map(function (m) {
+          return '<button type="button" class="slot" data-m="' + m + '" aria-pressed="' + (B.mins === m) + '">' + fmtTime(m) + "</button>";
+        }).join("") + "</div></div>";
+      });
+    }
+    html += "</fieldset>";
+    return html;
+  }
+
+  function fieldHtml(id, label, control, hint) {
+    var err = B.errors[id];
+    return '<div class="field' + (err ? " bad" : "") + '"><label for="' + id + '">' + label + "</label>" + control +
+      (hint && !err ? '<p class="hint" id="' + id + 'H">' + hint + "</p>" : "") +
+      (err ? '<p class="err" id="' + id + 'E" role="alert">' + err + "</p>" : "") + "</div>";
+  }
+  function stepDetails() {
+    var f = B.form, e = B.errors;
+    var who = '<select id="who" name="who">' + ["Myself", "My child", "Someone else"].map(function (o) { return '<option' + (f.who === o ? " selected" : "") + ">" + o + "</option>"; }).join("") + "</select>";
+    var html = fieldHtml("who", "Who is this consult for?", who);
+    html += '<div class="two">' +
+      fieldHtml("name", "Patient's full name", '<input id="name" name="name" type="text" autocomplete="name" value="' + esc(f.name) + '"' + (e.name ? ' aria-invalid="true" aria-describedby="nameE"' : "") + ">") +
+      fieldHtml("age", "Age", '<input id="age" name="age" type="number" inputmode="numeric" min="0" max="120" value="' + esc(f.age) + '"' + (e.age ? ' aria-invalid="true" aria-describedby="ageE"' : "") + ">") +
+      "</div>";
+    html += fieldHtml("phone", "Mobile number", '<input id="phone" name="phone" type="tel" autocomplete="tel" value="' + esc(f.phone) + '"' + (e.phone ? ' aria-invalid="true" aria-describedby="phoneE"' : ' aria-describedby="phoneH"') + ">", "We text your joining link here.");
+    html += fieldHtml("concern", "What would you like help with?", '<textarea id="concern" name="concern" maxlength="400"' + (e.concern ? ' aria-invalid="true" aria-describedby="concernE"' : ' aria-describedby="concernH"') + ">" + esc(f.concern) + "</textarea>", "Symptoms, how long you have had them, and any medicines you take.");
+    html += '<label class="check' + (e.ok ? " bad" : "") + '"><input type="checkbox" id="ok"' + (f.ok ? " checked" : "") + '><span>I understand this service is not for emergencies.' + (e.ok ? " Tick this box to continue." : "") + "</span></label>";
+    return html;
+  }
+
+  function stepDone() {
+    var b = B.booking, d = B.doc;
+    return '<div class="done-wrap"><div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.500" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg></div>' +
+      '<h2 id="doneTitle" tabindex="-1">Your consult is booked</h2>' +
+      "<p>We will text your joining link to " + esc(B.form.phone) + ".</p></div>" +
+      '<dl class="summary">' +
+      "<div><dt>Doctor</dt><dd>" + esc(d.name) + "</dd></div>" +
+      "<div><dt>When</dt><dd>" + fmtDate(addDays(B.now, B.day)) + ", " + fmtTime(B.mins) + "</dd></div>" +
+      "<div><dt>Type</dt><dd>" + modeName(B.mode) + "</dd></div>" +
+      "<div><dt>Patient</dt><dd>" + esc(B.form.name) + "</dd></div>" +
+      "<div><dt>Fee</dt><dd>" + CURRENCY + priceFor(d, B.mode) + "</dd></div>" +
+      "<div><dt>Booking ID</dt><dd>" + b.id + "</dd></div></dl>";
+  }
+
+  function drawDialog() {
+    var doc = B.doc, scroll = 0, old = inner.querySelector(".dlg-body");
+    if (old) scroll = old.scrollTop;
+    var tint = TINTS[SPECIALITIES.indexOf(doc.spec)];
+    var body = B.step === 1 ? stepTime() : B.step === 2 ? stepDetails() : stepDone();
+    var foot = "";
+    if (B.step === 1) {
+      var sum = B.mins != null ? "<b>" + fmtDate(addDays(B.now, B.day)) + ", " + fmtTime(B.mins) + "</b>. " + modeName(B.mode) + ", " + CURRENCY + priceFor(doc, B.mode) : "Choose a time to continue";
+      foot = '<p class="sum">' + sum + '</p><div class="btns"><button class="btn btn-pine" type="button" data-act="next"' + (B.mins == null ? " disabled" : "") + ">Continue</button></div>";
+    } else if (B.step === 2) {
+      foot = '<p class="sum"><b>' + fmtDate(addDays(B.now, B.day)) + ", " + fmtTime(B.mins) + "</b>. " + modeName(B.mode) + ", " + CURRENCY + priceFor(doc, B.mode) + '</p><div class="btns"><button class="btn btn-ghost" type="button" data-act="back">Back</button><button class="btn btn-sun" type="button" data-act="confirm">Confirm booking</button></div>';
+    } else {
+      foot = '<div class="btns"><button class="btn btn-ghost" type="button" data-act="ics">Add to calendar</button><button class="btn btn-pine" type="button" data-act="close">Done</button></div>';
+    }
+    inner.innerHTML =
+      '<div class="dlg-head"><div class="avatar" style="background:' + tint + '" aria-hidden="true">' + initials(doc.name) + '</div>' +
+      '<div class="grow"><h2 id="dlgTitle">' + esc(doc.name) + "</h2><p>" + esc(doc.spec) + ", " + doc.years + ' years</p></div>' +
+      '<button class="x" type="button" data-act="close" aria-label="Close booking"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>' +
+      stepsHtml() + '<div class="dlg-body">' + body + '</div><div class="dlg-foot">' + foot + "</div>";
+    var nb = inner.querySelector(".dlg-body"); if (nb) nb.scrollTop = scroll;
+  }
+
+  function validate() {
+    var f = B.form, e = {};
+    if (f.name.trim().length < 2) e.name = "Enter the patient's full name.";
+    var age = parseInt(f.age, 10);
+    if (isNaN(age) || age < 0 || age > 120) e.age = "Enter an age between 0 and 120.";
+    var digits = f.phone.replace(/\D/g, "");
+    if (digits.length < 10 || digits.length > 13) e.phone = "Enter a mobile number with at least 10 digits.";
+    if (f.concern.trim().length < 5) e.concern = "Tell the doctor briefly what you need help with.";
+    if (!f.ok) e.ok = true;
+    return e;
+  }
+
+  function makeICS() {
+    var d = addDays(B.now, B.day), s = B.mins, e = s + 20;
+    function dt(m) { return d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + "T" + pad(Math.floor(m / 60)) + pad(m % 60) + "00"; }
+    var lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Hale//Consult//EN", "BEGIN:VEVENT",
+      "UID:" + B.booking.id + "@hale", "DTSTAMP:" + dt(0).slice(0, 8) + "T000000",
+      "DTSTART:" + dt(s), "DTEND:" + dt(e),
+      "SUMMARY:" + modeName(B.mode) + " with " + B.doc.name, "DESCRIPTION:Booking ID " + B.booking.id, "END:VEVENT", "END:VCALENDAR"];
+    var blob = new Blob([lines.join("\r\n")], { type: "text/calendar" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "hale-consult.ics";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+
+  inner.addEventListener("click", function (e) {
+    var t = e.target;
+    var day = t.closest("[data-day]");
+    if (day && !day.disabled) { B.day = parseInt(day.dataset.day, 10); B.mins = null; drawDialog(); return; }
+    var slot = t.closest("[data-m]");
+    if (slot) { B.mins = parseInt(slot.dataset.m, 10); drawDialog(); return; }
+    var act = t.closest("[data-act]"); if (!act) return;
+    var a = act.dataset.act;
+    if (a === "close") closeDialog();
+    else if (a === "next" && B.mins != null) { B.step = 2; drawDialog(); inner.querySelector("#name").focus(); }
+    else if (a === "back") { B.step = 1; drawDialog(); }
+    else if (a === "ics") makeICS();
+    else if (a === "confirm") {
+      B.errors = validate();
+      var keys = Object.keys(B.errors);
+      if (keys.length) { drawDialog(); var first = inner.querySelector("#" + keys[0]); if (first) first.focus(); return; }
+      // In a real site, send the booking to your server here (doctor, date, time, mode, patient details).
+      B.booking = { id: "HL-" + Math.random().toString(36).slice(2, 8).toUpperCase() };
+      B.step = 3; drawDialog();
+      var h = inner.querySelector("#doneTitle"); if (h) h.focus();
+    }
+  });
+  inner.addEventListener("change", function (e) {
+    if (e.target.name === "mode") { B.mode = e.target.value; drawDialog(); }
+    else if (e.target.id === "ok") { B.form.ok = e.target.checked; }
+    else if (e.target.id === "who") { B.form.who = e.target.value; }
+  });
+  inner.addEventListener("input", function (e) {
+    var id = e.target.id;
+    if (id === "name" || id === "age" || id === "phone" || id === "concern") B.form[id] = e.target.value;
+  });
+
+  /* ---------- Init ---------- */
+  renderChips(); renderDoctors(); renderLive();
+})();
+</script>
+</body>
+</html>
+
